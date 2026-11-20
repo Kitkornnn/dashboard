@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ทะเบียนยา — ร้านยาจำลอง</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#eef2f8; --surface:#ffffff; --surface-2:#f6f8fc; --border:#e1e7f0;
+  --ink:#0f1b2d; --ink-2:#4a586d; --ink-3:#7b889c;
+  --blue:#2a78d6; --blue-2:#184f95; --blue-soft:#e6f0fc; --blue-line:#9ec5f4;
+  --orange:#eb6834; --orange-soft:#fdeee7; --red:#e34948; --red-soft:#fdecec;
+  --green:#008300; --green-soft:#e4f3e4;
+  --grid:#e6ebf3; --shadow:0 1px 2px rgba(15,27,45,.05),0 8px 24px rgba(15,27,45,.06);
+  --weekend:rgba(120,135,160,.10);
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0c1118; --surface:#151b25; --surface-2:#1a2230; --border:#263041;
+  --ink:#eef2f8; --ink-2:#b7c2d3; --ink-3:#8493a8;
+  --blue:#3987e5; --blue-2:#184f95; --blue-soft:#14263d; --blue-line:#3b6aa6;
+  --orange:#e8743f; --orange-soft:#3a2418; --red:#e66767; --red-soft:#3a1c1c;
+  --green:#0ca30c; --green-soft:#16301a;
+  --grid:#232d3d; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  --weekend:rgba(160,175,200,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0c1118; --surface:#151b25; --surface-2:#1a2230; --border:#263041;
+    --ink:#eef2f8; --ink-2:#b7c2d3; --ink-3:#8493a8;
+    --blue:#3987e5; --blue-2:#184f95; --blue-soft:#14263d; --blue-line:#3b6aa6;
+    --orange:#e8743f; --orange-soft:#3a2418; --red:#e66767; --red-soft:#3a1c1c;
+    --green:#0ca30c; --green-soft:#16301a;
+    --grid:#232d3d; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+    --weekend:rgba(160,175,200,.08);
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:'Sarabun','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif;
+  font-size:15px;line-height:1.5}
+.hero{background:linear-gradient(120deg,#0d366b 0%,#184f95 45%,#2a78d6 100%);color:#fff;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;opacity:.18;
+  background:radial-gradient(circle at 85% 20%,#fff 0,transparent 40%),radial-gradient(circle at 10% 120%,#86b6ef 0,transparent 45%)}
+.hero-in{position:relative;max-width:1280px;margin:0 auto;padding:28px 24px 84px;display:flex;gap:16px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+.hero h1{margin:0 0 4px;font-size:26px;font-weight:700;letter-spacing:.2px}
+.hero p{margin:0;opacity:.85;font-size:14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.chip{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:999px;font-size:12.5px;backdrop-filter:blur(4px)}
+.tbtn{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 14px;border-radius:10px;cursor:pointer;font:inherit;font-size:13px}
+.tbtn:hover{background:rgba(255,255,255,.26)}
+main{max-width:1280px;margin:-64px auto 40px;padding:0 24px;position:relative}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:18px 20px;min-width:0}
+.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-6{grid-column:span 6}.span-4{grid-column:span 4}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:16px}
+.kpi{position:relative;overflow:hidden;padding:18px 18px 16px}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--blue)}
+.kpi.warn::before{background:var(--orange)}
+.kpi .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--blue-soft);color:var(--blue);margin-bottom:10px}
+.kpi.warn .ic{background:var(--orange-soft);color:var(--orange)}
+.kpi .lb{font-size:13px;color:var(--ink-2);font-weight:600}
+.kpi .val{font-size:34px;font-weight:700;line-height:1.15;margin:2px 0;font-variant-numeric:tabular-nums}
+.kpi .val small{font-size:15px;font-weight:600;color:var(--ink-2);margin-left:4px}
+.kpi .ft{font-size:12.5px;color:var(--ink-3)}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--orange-soft);color:var(--orange);margin-bottom:6px}
+.card h3{margin:0;font-size:16px;font-weight:700}
+.card .sub{margin:2px 0 12px;color:var(--ink-2);font-size:13px}
+.card .sub b{color:var(--ink)}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--ink-2);align-items:center;flex-wrap:wrap}
+.legend i{display:inline-block;width:18px;height:0;border-top:3px solid var(--blue);vertical-align:middle;margin-right:5px;border-radius:2px}
+.legend i.dash{border-top:2px dashed var(--orange)}
+.legend i.box{width:12px;height:12px;border:0;background:var(--weekend);border-radius:3px;box-shadow:inset 0 0 0 1px var(--border)}
+svg text{font-family:inherit;fill:var(--ink-3);font-size:11.5px}
+svg .grid{stroke:var(--grid);stroke-width:1}
+.hb{display:grid;grid-template-columns:minmax(110px,38%) 1fr auto;gap:10px;align-items:center;padding:5px 0;cursor:default}
+.hb:hover .hb-f{filter:brightness(1.12)}
+.hb-l{font-size:13px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb-t{background:var(--surface-2);border-radius:6px;height:16px;position:relative}
+.hb-f{height:100%;border-radius:0 6px 6px 0;background:var(--blue);animation:grow .8s cubic-bezier(.2,.8,.2,1)}
+@keyframes grow{from{width:0!important}}
+.hb-v{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;min-width:64px;text-align:right}
+.hb-ref{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink-2);border-radius:2px}
+.alerts{display:flex;flex-direction:column;gap:10px}
+.al{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:10px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border)}
+.al .i{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800}
+.al.r .i{background:var(--red-soft);color:var(--red)}
+.al.o .i{background:var(--orange-soft);color:var(--orange)}
+.al.b .i{background:var(--blue-soft);color:var(--blue)}
+.al b{display:block;font-size:13.5px}
+.al span{font-size:12.5px;color:var(--ink-2)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--ink-3);font-weight:600;font-size:12px;padding:6px 8px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:8px;border-bottom:1px solid var(--grid);vertical-align:top}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:700}
+.pill.o{background:var(--orange-soft);color:var(--orange)}
+.pill.r{background:var(--red-soft);color:var(--red)}
+.pill.b{background:var(--blue-soft);color:var(--blue)}
+.scroll{overflow-x:auto}
+.dq{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13px}
+.dq li{display:grid;grid-template-columns:22px 1fr;gap:8px;color:var(--ink-2)}
+.dq li b{color:var(--ink)}
+.dq .d{width:22px;height:22px;border-radius:50%;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;font-size:12px;font-weight:800}
+footer{max-width:1280px;margin:0 auto;padding:0 24px 40px;color:var(--ink-3);font-size:12.5px}
+#tip{position:fixed;top:0;left:0;pointer-events:none;opacity:0;transition:opacity .12s;z-index:50;
+  background:var(--ink);color:var(--bg);padding:8px 11px;border-radius:9px;font-size:12.5px;line-height:1.45;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:260px}
+#tip b{display:block;margin-bottom:1px}
+@media (max-width:1100px){
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .span-8,.span-6,.span-4{grid-column:span 12}
+}
+@media (max-width:700px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .hero h1{font-size:21px}
+  .hb{grid-template-columns:minmax(90px,42%) 1fr auto}
+  main,.hero-in,footer{padding-left:14px;padding-right:14px}
+}
+@media (max-width:460px){.kpis{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.hb-f{animation:none}}
+
+/* ---------- tabs & extra components ---------- */
+.tabs{flex-basis:100%;display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}
+.tab-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;padding:9px 18px;border-radius:12px;cursor:pointer;font:inherit;font-size:14px;font-weight:600;transition:background .15s}
+.tab-btn:hover{background:rgba(255,255,255,.22)}
+.tab-btn[aria-selected="true"]{background:#fff;color:#184f95;border-color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.22)}
+.tab-btn:focus-visible,.btn:focus-visible,.seg button:focus-visible,tr.clk:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.tabpane{display:none}
+.tabpane.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}}
+.note{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:14px;background:var(--orange-soft);border:1px solid var(--orange);margin-bottom:16px;font-size:13.5px;box-shadow:var(--shadow)}
+.note>span{color:var(--orange);font-weight:800}
+.note b{color:var(--orange)}
+.ctl{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+.fld{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink-2);font-weight:600}
+.fld input[type=search],.fld select{font:inherit;font-size:14px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--ink);min-width:150px;max-width:230px}
+.fld input[type=search]{min-width:230px}
+.fld input[type=range]{width:230px;accent-color:var(--blue)}
+.fld .rv{color:var(--ink);font-size:16px;font-weight:700}
+.btn{font:inherit;font-size:13px;padding:8px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--ink);cursor:pointer}
+.btn:hover:not(:disabled){border-color:var(--blue)}
+.btn:disabled{opacity:.45;cursor:default}
+.seg{display:inline-flex;gap:6px;flex-wrap:wrap}
+.seg button{font:inherit;font-size:12.5px;padding:5px 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface-2);color:var(--ink-2);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.legend i.sa{width:12px;height:12px;border:0;background:var(--blue);border-radius:3px}
+.legend i.sbb{width:12px;height:12px;border:0;background:var(--blue-line);border-radius:3px}
+.sb{display:flex;gap:2px;height:100%;width:100%}
+.sb-a{background:var(--blue)}
+.sb-b{background:var(--blue-line)}
+.sb>div:last-child{border-radius:0 6px 6px 0}
+.hb.clk{cursor:pointer}
+.hb-ref2{position:absolute;top:-3px;bottom:-3px;width:0;border-left:2px dashed var(--orange)}
+tbody tr.clk{cursor:pointer}
+tbody tr.clk:hover td{background:var(--surface-2)}
+tbody tr.sel td{background:var(--blue-soft)}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--ink)}
+.pill{white-space:nowrap}
+.pill.g{background:var(--green-soft);color:var(--green)}
+.pill.m{background:var(--surface-2);color:var(--ink-3);border:1px solid var(--border)}
+.sticky{position:sticky;top:12px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.st{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:8px 11px}
+.st small{display:block;color:var(--ink-3);font-size:11.5px}
+.st b{font-size:17px;font-variant-numeric:tabular-nums}
+.st b em{font-style:normal;font-size:12px;font-weight:600;color:var(--ink-2);margin-left:3px}
+.dh{font-size:19px;font-weight:700;margin:0}
+.dtags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.atcchain{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0 2px}
+.atcchain code{background:var(--blue-soft);color:var(--blue);padding:2px 7px;border-radius:7px;font-size:12px;font-weight:700}
+.dsec{font-size:12.5px;font-weight:700;color:var(--ink-2);margin:14px 0 4px}
+.pager{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;font-size:13px;color:var(--ink-2);flex-wrap:wrap}
+.empty{color:var(--ink-3);padding:28px 10px;text-align:center;font-size:13.5px}
+.mini{font-size:12px;color:var(--ink-3)}
+@media (max-width:1100px){.sticky{position:static}}
+
+/* ---------- แหล่งข้อมูล / สถานะ (เพิ่มใหม่) ---------- */
+.srcbadge{display:inline-flex;align-items:center;gap:6px;background:#0f8a3b;color:#fff;border:1px solid rgba(255,255,255,.35);padding:6px 12px;border-radius:999px;font-size:12.5px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.srcbadge::before{content:"";width:8px;height:8px;border-radius:50%;background:#b8f5c8}
+.srcwarn{background:#ffd84d;color:#3b2f00;text-align:center;padding:8px 14px;font-size:13.5px;font-weight:700;border-bottom:1px solid #d9b000}
+.srcwarn[hidden],.srcbadge[hidden],#status[hidden]{display:none}
+.hero-r{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.errbox{margin-bottom:16px;border-color:var(--red);background:var(--red-soft);color:var(--ink);font-size:15px}
+.loading{margin-bottom:16px;color:var(--ink-2);text-align:center}
+a.tbtn{text-decoration:none;display:inline-block}
+.pdbar{margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.pdbar b{font-size:13px}.pdbar .mini{margin-left:auto}
+.kpis+.kpis{margin-top:-0px}
+</style>
+</head>
+<body>
+<div class="srcwarn" id="src-warn" hidden></div>
+<header class="hero"><div class="hero-in">
+  <div>
+    <h1>ทะเบียนยา (Drug Register)</h1>
+    <p>ร้านยาจำลอง · ข้อมูลเพื่อการเรียนเท่านั้น</p>
+    <div class="chips"><span class="chip" id="chip-period"></span><span class="chip" id="chip-asof"></span><span class="chip" id="chip-src"></span></div>
+  </div>
+  <div class="hero-r"><span class="srcbadge" id="src-badge" hidden></span><a class="tbtn" href="./dashboard.html">← Dashboard</a><button class="tbtn" id="theme" type="button" aria-label="สลับโหมดสว่าง/มืด">◐ สลับโหมดสี</button></div>
+  <nav class="tabs" role="tablist" aria-label="เลือกมุมมอง"><button class="tab-btn" role="tab" data-tab="overview" aria-selected="true">Drug Overview</button><button class="tab-btn" role="tab" data-tab="explorer" aria-selected="false">Drug Explorer</button></nav>
+</div></header>
+
+<main>
+<div id="status" class="card loading">กำลังโหลดข้อมูลจาก /api/data …</div>
+<div class="tabpane" id="pane-overview">
+  <section class="kpis" id="ov-kpis"></section>
+  <div class="grid">
+    <section class="card span-6">
+      <h3>จำนวนยาแยกตามหมวด</h3><p class="sub" id="s-ovcat"></p>
+      <div id="ov-cat"></div>
+    </section>
+    <section class="card span-6"><h3>สัดส่วนยาที่มีสต็อก แยกตามหมวด</h3><p class="sub" id="s-ovcov"></p><div id="ov-cov"></div></section>
+    <section class="card span-4"><h3>กลุ่มยาตามระบบ ATC (ระดับ 1)</h3><p class="sub" id="s-ovatc"></p><div id="ov-atc"></div></section>
+    <section class="card span-4"><h3>รูปแบบยา (Dosage form)</h3><p class="sub" id="s-ovform"></p><div id="ov-form"></div></section>
+    <section class="card span-4"><h3>การกระจายของ Reorder level</h3><p class="sub" id="s-ovrl"></p><div id="ov-rl"></div></section>
+  </div>
+</div>
+
+<div class="tabpane" id="pane-explorer">
+  <section class="card" style="margin-bottom:16px">
+    <div class="ctl">
+      <label class="fld">ค้นหา (ชื่อ / SKU / ATC)<input type="search" id="ex-q" placeholder="เช่น amox, N02BE01, PARA500"></label>
+      <label class="fld">หมวดยา<select id="ex-cat"></select></label>
+      <label class="fld">รูปแบบยา<select id="ex-form"></select></label>
+      <label class="fld">สถานะ<select id="ex-status">
+        <option value="">ทั้งหมด</option><option value="stock">มีสต็อก</option><option value="none">ไม่มีสต็อก</option>
+        <option value="low">ต่ำกว่า reorder level</option><option value="near">ใกล้หมดอายุ ≤ 90 วัน</option><option value="disp">เคยถูกจ่ายในช่วงข้อมูล</option></select></label>
+      <button class="btn" id="ex-reset" type="button">ล้างตัวกรอง</button>
+      <span class="mini" id="ex-count" aria-live="polite"></span>
+    </div>
+  </section>
+  <div class="grid">
+    <section class="card span-8"><div class="scroll"><table id="ex-table"></table></div><div class="pager" id="ex-pager"></div></section>
+    <section class="card span-4"><div class="sticky" id="ex-detail"></div></section>
+  </div>
+</div>
+</main>
+<footer>แหล่งข้อมูล: <span id="f-src"></span> · ข้อมูล ณ <span id="f-asof"></span> · รายการ void และ return ไม่ถูกนับในตัวเลขการจ่ายยา · มูลค่าสต็อกคำนวณจากล็อต active เท่านั้น</footer>
+<div id="tip" role="tooltip"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const fmt = n => Number(n).toLocaleString('en-US');
+const baht = n => '฿' + Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const TH_M=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const TH_D=['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+const dobj = iso => new Date(iso+'T00:00:00');
+const fd = iso => { const d=dobj(iso); return d.getDate()+' '+TH_M[d.getMonth()]; };
+const fdl = iso => TH_D[dobj(iso).getDay()]+' '+fd(iso);
+const fdy = iso => { const d=dobj(iso); return d.getDate()+' '+TH_M[d.getMonth()]+' '+(d.getFullYear()+543); };
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tip = $('#tip');
+function showTip(e,html){tip.innerHTML=html;tip.style.opacity=1;const r=tip.getBoundingClientRect();
+  let x=e.clientX+14,y=e.clientY+14; if(x+r.width>innerWidth-8)x=e.clientX-r.width-14; if(y+r.height>innerHeight-8)y=e.clientY-r.height-14;
+  tip.style.transform=`translate(${Math.max(4,x)}px,${Math.max(4,y)}px)`;}
+const hideTip=()=>{tip.style.opacity=0};
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const IC={
+ rx:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M12 8v8M8 12h8"/></svg>',
+ users:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.5c2 .7 3 2.6 3 5.5"/></svg>',
+ box:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg>',
+ low:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17.5v.01"/></svg>',
+ clock:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
+};
+/* ---------- chart helpers ---------- */
+const rtop=(x,y,w,h,r)=>{if(h<=0)return '';r=Math.min(r,h,w/2);return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`};
+const niceMax=(m,step)=>Math.max(step,Math.ceil(m/step)*step);
+
+function lineChart(node,rows){
+  const W=Math.max(320,node.clientWidth),H=345,m={l:34,r:14,t:20,b:30};
+  const iw=W-m.l-m.r,ih=H-m.t-m.b,n=rows.length;
+  const avg=rows.map((_,i)=>{const s=rows.slice(Math.max(0,i-6),i+1);return s.reduce((a,r)=>a+r.n,0)/s.length});
+  const ymax=niceMax(Math.max(...rows.map(r=>r.n)),2);
+  const x=i=>m.l+iw*i/(n-1), y=v=>m.t+ih*(1-v/ymax), step=iw/(n-1);
+  let g='';
+  for(let v=0;v<=ymax;v+=2){g+=`<line class="grid" x1="${m.l}" x2="${W-m.r}" y1="${y(v)}" y2="${y(v)}"/><text x="${m.l-8}" y="${y(v)+4}" text-anchor="end">${v}</text>`}
+  let wk='';
+  rows.forEach((r,i)=>{const d=dobj(r.d).getDay(); if(d===0||d===6){wk+=`<rect x="${x(i)-step/2}" y="${m.t}" width="${step}" height="${ih}" fill="var(--weekend)"/>`}});
+  let xl='';
+  rows.forEach((r,i)=>{if(i%4===0){xl+=`<text x="${x(i)}" y="${H-8}" text-anchor="middle">${fd(r.d)}</text>`}});
+  const pts=rows.map((r,i)=>`${x(i)},${y(r.n)}`);
+  const line='M'+pts.join('L');
+  const area=`M${x(0)},${y(0)}L${pts.join('L')}L${x(n-1)},${y(0)}Z`;
+  const aline='M'+avg.map((v,i)=>`${x(i)},${y(v)}`).join('L');
+  const pk=rows.reduce((a,r,i)=>r.n>rows[a].n?i:a,0);
+  const lab=`<circle cx="${x(pk)}" cy="${y(rows[pk].n)}" r="5" fill="var(--blue)" stroke="var(--surface)" stroke-width="2"/>
+    <text x="${x(pk)}" y="${y(rows[pk].n)-11}" text-anchor="middle" style="fill:var(--ink);font-weight:700;font-size:12px">สูงสุด ${rows[pk].n}</text>`;
+  node.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="กราฟเส้นจำนวนครั้งที่จ่ายยารายวัน">
+   <defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--blue)" stop-opacity=".32"/><stop offset="1" stop-color="var(--blue)" stop-opacity="0"/></linearGradient></defs>
+   ${wk}${g}${xl}<path d="${area}" fill="url(#ga)"/><path d="${aline}" fill="none" stroke="var(--orange)" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round"/>
+   <path d="${line}" fill="none" stroke="var(--blue)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>${lab}
+   <g id="xh" style="display:none"><line id="xhl" y1="${m.t}" y2="${m.t+ih}" stroke="var(--ink-3)" stroke-dasharray="3 3"/><circle id="xhd" r="5.5" fill="var(--blue)" stroke="var(--surface)" stroke-width="2"/></g>
+   <rect id="ov" x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent"/></svg>`;
+  const svg=node.querySelector('svg'),ov=svg.querySelector('#ov'),xh=svg.querySelector('#xh');
+  ov.addEventListener('mousemove',e=>{
+    const b=svg.getBoundingClientRect(),px=(e.clientX-b.left)*(W/b.width);
+    const i=Math.max(0,Math.min(n-1,Math.round((px-m.l)/step)));
+    xh.style.display='';xh.querySelector('#xhl').setAttribute('x1',x(i));xh.querySelector('#xhl').setAttribute('x2',x(i));
+    xh.querySelector('#xhd').setAttribute('cx',x(i));xh.querySelector('#xhd').setAttribute('cy',y(rows[i].n));
+    showTip(e,`<b>${fdl(rows[i].d)}</b>จ่ายยา ${rows[i].n} ครั้ง<br>เฉลี่ย 7 วัน ${avg[i].toFixed(1)}`);
+  });
+  ov.addEventListener('mouseleave',()=>{xh.style.display='none';hideTip()});
+}
+
+function colChart(node,rows,o){
+  const W=Math.max(260,node.clientWidth),H=o.h||230,m={l:30,r:8,t:22,b:o.bb||28};
+  const iw=W-m.l-m.r,ih=H-m.t-m.b,n=rows.length;
+  const mx=Math.max(...rows.map(o.v)),st=o.step||2;
+  const ts=st*Math.max(1,Math.ceil(mx/st/4)),ymax=ts*Math.max(1,Math.ceil(mx/ts));
+  const slot=iw/n,bw=Math.min(46,slot*.64);
+  const y=v=>m.t+ih*(1-v/ymax);
+  let g='';
+  for(let v=0;v<=ymax;v+=ts){g+=`<line class="grid" x1="${m.l}" x2="${W-m.r}" y1="${y(v)}" y2="${y(v)}"/><text x="${m.l-6}" y="${y(v)+4}" text-anchor="end">${Number.isInteger(v)?v:v.toFixed(1)}</text>`}
+  let bars='';
+  rows.forEach((r,i)=>{
+    const v=o.v(r),cx=m.l+slot*i+slot/2,h=ih*v/ymax;
+    const col=o.c?o.c(r,i):'var(--blue)';
+    bars+=`<path class="bar" data-i="${i}" d="${rtop(cx-bw/2,y(v),bw,h,5)}" fill="${col}"/>`;
+    if(o.all||(o.hi&&o.hi(r,i)))bars+=`<text x="${cx}" y="${y(v)-6}" text-anchor="middle" style="fill:var(--ink);font-weight:700">${o.f?o.f(v):v}</text>`;
+    bars+=`<text x="${cx}" y="${H-(o.bb?o.bb-16:9)}" text-anchor="middle">${esc(o.l(r))}</text>`;
+    bars+=`<rect class="hit" data-i="${i}" x="${m.l+slot*i}" y="${m.t}" width="${slot}" height="${ih+m.b}" fill="transparent"/>`;
+  });
+  node.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="${esc(o.aria||'กราฟแท่ง')}">${g}${bars}</svg>`;
+  node.querySelectorAll('.hit').forEach(h=>{
+    const i=+h.dataset.i,bar=node.querySelector(`.bar[data-i="${i}"]`);
+    h.addEventListener('mousemove',e=>{bar&&bar.setAttribute('opacity','.8');showTip(e,o.tip(rows[i]))});
+    h.addEventListener('mouseleave',()=>{bar&&bar.removeAttribute('opacity');hideTip()});
+  });
+}
+
+function hbars(node,rows,o){
+  const max=Math.max(...rows.map(o.v),o.min||0);
+  node.innerHTML=rows.map((r,i)=>`<div class="hb ${o.click?'clk':''}" data-i="${i}"><div class="hb-l" title="${esc(o.l(r))}">${esc(o.l(r))}</div>
+   <div class="hb-t"><div class="hb-f" style="width:${Math.max(1.5,o.v(r)/max*100)}%;${o.c?`background:${o.c(r)}`:''}"></div>${o.ref?`<div class="hb-ref" style="left:${o.ref/max*100}%"></div>`:''}${o.ref2?`<div class="hb-ref2" style="left:${o.ref2/max*100}%"></div>`:''}</div>
+   <div class="hb-v">${o.f(r)}</div></div>`).join('');
+  node.querySelectorAll('.hb').forEach(h=>{const r=rows[+h.dataset.i];
+    h.addEventListener('mousemove',e=>showTip(e,o.tip(r)));h.addEventListener('mouseleave',hideTip);
+    if(o.click)h.addEventListener('click',()=>o.click(r));});
+}
+Object.assign(IC,{
+ cart:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/></svg>',
+ layers:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5M3 17.5l9 5 9-5" opacity=".6"/></svg>',
+ grid:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>',
+ pause:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/></svg>'
+});
+function animateNode(node,anim){
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  node.querySelectorAll('.val span').forEach(el=>{
+    const v=+el.dataset.v,m=el.dataset.m==='1',dec=+el.dataset.d;
+    const show=x=>m?'฿'+x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):x.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+    if(reduce||!anim){el.textContent=show(v);return}
+    const t0=performance.now(),dur=800;
+    const step=t=>{const p=Math.min(1,(t-t0)/dur);el.textContent=show(v*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(step)};
+    requestAnimationFrame(step);
+  });
+}
+function kpiRow(node,cards,anim){
+  node.innerHTML=cards.map(c=>`<div class="card kpi ${c.warn?'warn':''}"><div class="ic">${IC[c.ic]}</div>${c.warn?`<div class="tag">▲ ${c.tag}</div><br>`:''}
+   <div class="lb">${c.lb}</div><div class="val"><span data-v="${c.v}" data-m="${c.money?1:0}" data-d="${c.dec||0}">0</span><small>${c.u}</small></div><div class="ft">${esc(c.ft)}</div></div>`).join('');
+  animateNode(node,anim);
+}
+const pillH=(p)=>`<span class="pill ${p[1]}">${esc(p[0])}</span>`;
+const nameOf=r=>`${r.name} ${r.strength}`;
+/* =====================================================================
+   ชั้นข้อมูล (ใช้ร่วมกันทั้งสองหน้า)
+   ลำดับ: 1) /api/data  ->  2) ถ้าล้มเหลว อ่านไฟล์สำรองใน ./data/
+   ไม่มี key ในไฟล์นี้ ไม่ใช้ supabase-js ไม่เรียก URL ของ Supabase ตรง
+   ===================================================================== */
+const API_URL='/api/data';
+const API_TIMEOUT_MS=8000;                       // หมดเวลา 8 วินาทีแล้วใช้ไฟล์สำรอง
+const FALLBACK_FILES={drugs:'./data/drugs_update.json',stock:'./data/stock.json',dispense_log:'./data/dispense-log.json'};
+const MSG_NO_API='ทดสอบผ่านลิงก์ Vercel เท่านั้น (Live Server ไม่รัน /api)';
+
+async function getJson(url,ms){
+  const ctl=new AbortController(), t=setTimeout(()=>ctl.abort(),ms);
+  try{
+    const r=await fetch(url,{signal:ctl.signal,cache:'no-store'});
+    if(r.status!==200)throw new Error(url+' ตอบ '+r.status);   // ต้องเป็น 200 เท่านั้น
+    return await r.json();
+  }finally{clearTimeout(t)}
+}
+const itemsOf=b=>Array.isArray(b)?b:(b&&Array.isArray(b.items)?b.items:null);
+const metaOf=b=>(b&&!Array.isArray(b)&&b.meta)||{};
+const day10=s=>s==null||s===''?null:String(s).slice(0,10);   // เทียบวันที่เป็นข้อความ ไม่แปลงเขตเวลา
+
+async function loadRaw(){
+  /* 1) อ่านจาก /api/data (ข้อมูลจริงจาก Supabase) */
+  try{
+    const j=await getJson(API_URL,API_TIMEOUT_MS);
+    const drugs=itemsOf(j&&j.drugs),stock=itemsOf(j&&j.stock),disp=itemsOf(j&&j.dispense_log);
+    const asof=day10(metaOf(j&&j.stock).as_of);                 // วันอ้างอิงใช้ stock.meta.as_of
+    if(!drugs||!stock||!disp||!drugs.length||!stock.length||!asof)throw new Error('/api/data ได้ข้อมูลไม่ครบ');
+    return {src:'supabase',asof,drugs,stock,disp};
+  }catch(e){console.warn('ใช้ /api/data ไม่ได้ จะอ่านไฟล์สำรอง:',e&&e.message)}
+  /* 2) ทางสำรอง: อ่านไฟล์ JSON ในโฟลเดอร์ data (ไม่ใช่ข้อมูลล่าสุด) */
+  try{
+    const [d,s,l]=await Promise.all([getJson(FALLBACK_FILES.drugs,API_TIMEOUT_MS),getJson(FALLBACK_FILES.stock,API_TIMEOUT_MS),getJson(FALLBACK_FILES.dispense_log,API_TIMEOUT_MS)]);
+    const drugs=itemsOf(d),stock=itemsOf(s),disp=itemsOf(l);
+    if(!drugs||!stock||!disp)throw new Error('ไฟล์สำรองไม่ครบ');
+    let asof=day10(metaOf(s).as_of);
+    if(!asof){                                                   // ไฟล์ไม่มี meta: ใช้วันล่าสุดที่พบในข้อมูล (ไม่ใช้ new Date())
+      asof=[...stock.map(x=>day10(x.received_date)),...disp.map(x=>day10(x.datetime))].filter(Boolean).sort().pop()||'1970-01-01';
+    }
+    return {src:'file',asof,drugs,stock,disp};
+  }catch(e){console.warn('อ่านไฟล์สำรองไม่ได้:',e&&e.message)}
+  throw new Error(MSG_NO_API);
+}
+
+/* ---------- แปลงข้อมูลดิบเป็นโมเดลที่หน้าจอใช้ ---------- */
+const addDays=(iso,n)=>{const d=new Date(iso+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
+const daysBetween=(a,b)=>Math.round((Date.parse(b+'T00:00:00Z')-Date.parse(a+'T00:00:00Z'))/864e5);
+const dayRange=(a,b)=>{const o=[];for(let d=a;d<=b;d=addDays(d,1))o.push(d);return o};
+
+function buildModel(raw){
+  const asof=raw.asof;
+  const drugs=raw.drugs.map(x=>({sku:String(x.sku),name:x.generic_name||x.sku,strength:x.strength||'',form:x.dosage_form||'-',unit:x.unit||'',
+    cat:x.category||'-',atc:x.atc_code||'',rl:Number(x.reorder_level)||0,
+    lots:[],nlots:0,q:0,qq:0,val:0,cost:0,exp:null,dn:0,dp:0,dq:0,last:null,dd:[]}));
+  const by={};drugs.forEach(r=>by[r.sku]=r);
+  const lots=raw.stock.map(x=>({id:x.stock_id,sku:String(x.sku),lot:String(x.lot),recv:day10(x.received_date),exp:day10(x.expiry),
+    q:Number(x.qty_on_hand)||0,cost:Number(x.unit_cost)||0,st:x.status||'active'}));
+  const lotBy={};lots.forEach(l=>lotBy[l.sku+'\u0000'+l.lot]=l);
+  // ยอดใช้ได้ = ล็อต active, expiry >= as_of, qty_on_hand > 0
+  const usable=l=>l.st==='active'&&!!l.exp&&l.exp>=asof&&l.q>0;
+  lots.forEach(l=>{
+    const r=by[l.sku];if(!r)return;
+    r.lots.push(l);r.nlots++;
+    if(usable(l)){r.q+=l.q;r.val+=l.q*l.cost;if(!r.exp||l.exp<r.exp)r.exp=l.exp}
+    if(l.st==='quarantine')r.qq+=l.q;
+  });
+  drugs.forEach(r=>{   // ราคาต่อหน่วย = ล็อต active ที่รับเข้าล่าสุด (ถ้าไม่มีใช้ล็อตล่าสุดอะไรก็ได้)
+    const s=[...r.lots].sort((a,b)=>String(b.recv).localeCompare(String(a.recv)));
+    r.cost=((s.find(l=>l.st==='active')||s[0])||{cost:0}).cost;
+    r.lots.sort((a,b)=>String(a.exp||'9999').localeCompare(String(b.exp||'9999')));
+  });
+  const disp=raw.disp.map(x=>{
+    const dt=String(x.datetime||''),qty=Number(x.qty);
+    return {id:String(x.dispense_id),dt,date:dt.slice(0,10),min:dt.slice(0,16),hour:parseInt(dt.slice(11,13),10),
+      sku:String(x.sku),lot:String(x.lot),qty,pt:String(x.patient_code||''),rx:String(x.pharmacist_code||''),
+      type:x.type||(qty>0?'dispense':'void'),legacy:x.legacy_id||null};
+  });
+  const real=disp.filter(r=>r.type==='dispense');
+  const dates=real.map(r=>r.date).sort();
+  const first=dates[0]||asof,last=dates[dates.length-1]||asof;
+  const pdays=daysBetween(first,last)+1;
+  const pts={};
+  real.forEach(r=>{const d=by[r.sku];if(!d)return;
+    d.dn++;d.dq+=r.qty;d.dd.push([r.date,r.qty]);(pts[r.sku]=pts[r.sku]||new Set()).add(r.pt);
+    if(!d.last||r.date>d.last)d.last=r.date;});
+  drugs.forEach(r=>{r.dp=pts[r.sku]?pts[r.sku].size:0});
+  return {src:raw.src,asof,drugs,by,lots,lotBy,usable,disp,real,first,last,pdays};
+}
+
+/* ---------- ตัวช่วยหน้าตา (ใช้ร่วมกัน) ---------- */
+function renderSourceUI(M,files){
+  const ok=M.src==='supabase',b=$('#src-badge'),w=$('#src-warn');
+  if(ok){b.hidden=false;b.textContent='ข้อมูลจาก Supabase · as_of '+M.asof;w.hidden=true}
+  else{b.hidden=true;w.hidden=false;w.textContent='ข้อมูลสำรองจากไฟล์ (ไม่ใช่ข้อมูลล่าสุด) · as_of '+M.asof}
+  // ข้อความแหล่งข้อมูลใน footer เปลี่ยนตามแหล่งจริง
+  $('#f-src').textContent=ok?'Supabase ผ่าน /api/data (drugs, stock, dispense_log)':'ไฟล์สำรอง '+files;
+  $('#f-asof').textContent=fdy(M.asof);
+}
+function showError(msg){
+  const s=$('#status');s.hidden=false;s.className='card errbox';
+  s.innerHTML='<b>โหลดข้อมูลไม่สำเร็จ</b><br>'+esc(msg);
+  $('#src-warn').hidden=true;$('#src-badge').hidden=true;
+}
+
+/* =====================================================================
+   ทะเบียนยา: สถิติภาพรวมจาก drugs (/api/data → drugs 100 รายการ)
+   ===================================================================== */
+const ATC_TH={A:'ทางเดินอาหารและเมตาบอลิซึม',B:'เลือดและการสร้างเลือด',C:'หัวใจและหลอดเลือด',D:'ผิวหนัง',G:'ระบบสืบพันธุ์และฮอร์โมนเพศ',
+  H:'ฮอร์โมนระบบ (ไม่รวมฮอร์โมนเพศ)',J:'ยาต้านการติดเชื้อ',L:'ต้านมะเร็งและกดภูมิคุ้มกัน',M:'กล้ามเนื้อและกระดูก',N:'ระบบประสาท',P:'ต้านปรสิตและพยาธิ',
+  R:'ระบบทางเดินหายใจ',S:'อวัยวะรับความรู้สึก (ตา หู)',V:'อื่น ๆ'};
+function overviewStats(M){
+  const dr=M.drugs,grp=f=>{const m=new Map();dr.forEach(r=>{const k=f(r);const o=m.get(k)||{name:k,n:0,stocked:0,dispensed:0};o.n++;if(r.nlots)o.stocked++;if(r.dn)o.dispensed++;m.set(k,o)});return [...m.values()].sort((a,b)=>b.n-a.n||String(a.name).localeCompare(String(b.name),'th'))};
+  const cats=grp(r=>r.cat),forms=grp(r=>r.form);
+  const atc=grp(r=>(r.atc||'?')[0]).map(o=>({code:o.name,name:ATC_TH[o.name]||'ไม่ทราบกลุ่ม',n:o.n}));
+  const rls=dr.map(r=>r.rl).sort((a,b)=>a-b),med=rls.length?(rls.length%2?rls[(rls.length-1)/2]:(rls[rls.length/2-1]+rls[rls.length/2])/2):0;
+  return {n:dr.length,cats,forms,atc,stocked:dr.filter(r=>r.nlots).length,dispensed:dr.filter(r=>r.dn).length,
+    rl_min:rls[0]||0,rl_med:med,rl_max:rls[rls.length-1]||0,atc_bad:dr.filter(r=>!/^[A-Z]\d{2}[A-Z]{2}\d{2}$/.test(r.atc)).map(r=>r.sku)};
+}
+const daysTo=iso=>daysBetween(M.asof,iso);
+const PILL={active:['ใช้งานได้','g'],quarantine:['กักกัน','o'],written_off:['ตัดจำหน่าย','r']};
+function dstat(r){
+  if(!r.nlots)return ['ไม่มีสต็อก','m'];
+  if(r.q<=0)return ['ไม่มียาที่ใช้ได้','r'];
+  if(r.q<r.rl)return ['ต่ำกว่า reorder','o'];
+  return ['มีสต็อก','g'];
+}
+
+/* ---------------- Drug Overview ---------------- */
+let ovInit=false,O=null;
+function drawOverview(){
+  O=O||overviewStats(M);
+  const dr=M.drugs;
+  if(!ovInit){
+    ovInit=true;
+    kpiRow($('#ov-kpis'),[
+      {ic:'layers',lb:'SKU ทั้งหมด',v:O.n,u:'รายการ',ft:'จากตาราง drugs'},
+      {ic:'grid',lb:'หมวดหมู่',v:O.cats.length,u:'หมวด',ft:`ATC ระดับ 1 มี ${O.atc.length} กลุ่ม`},
+      {ic:'rx',lb:'รูปแบบยา (Dosage form)',v:O.forms.length,u:'รูปแบบ',ft:O.forms.length?`${O.forms[0].name} มากสุด ${O.forms[0].n} รายการ`:''},
+      {ic:'box',lb:'ยาที่มีสต็อก',v:O.stocked,u:`จาก ${O.n}`,ft:`คิดเป็น ${(O.n?O.stocked/O.n*100:0).toFixed(1)}% ของทะเบียน`},
+      {ic:'users',lb:'ยาที่ถูกจ่ายในช่วงข้อมูล',v:O.dispensed,u:'รายการ',ft:`${(O.n?O.dispensed/O.n*100:0).toFixed(1)}% ของทะเบียน · ${M.pdays} วัน`}
+    ],true);
+  }
+  const cats=O.cats;
+  hbars($('#ov-cat'),cats,{l:r=>r.name,v:r=>r.n,f:r=>r.n,tip:r=>`<b>${esc(r.name)}</b>${r.n} รายการ (${(r.n/O.n*100).toFixed(1)}%)<br>มีสต็อก ${r.stocked} · เคยถูกจ่าย ${r.dispensed}`});
+  $('#s-ovcat').innerHTML=cats.length?`<b>${esc(cats[0].name)}</b> มากที่สุด ${cats[0].n} รายการ จากทั้งหมด ${cats.length} หมวด`:'';
+  const cov=cats.map(c=>({...c,p:c.stocked/c.n*100})).sort((a,b)=>b.p-a.p||b.n-a.n);
+  hbars($('#ov-cov'),cov,{l:r=>r.name,v:r=>r.p,min:100,f:r=>`${r.stocked}/${r.n}`,
+    tip:r=>`<b>${esc(r.name)}</b>มีสต็อก ${r.stocked} จาก ${r.n} รายการ (${r.p.toFixed(0)}%)<br>เคยถูกจ่าย ${r.dispensed} รายการ`});
+  $('#s-ovcov').innerHTML=`<b>${cov.filter(c=>c.stocked===0).length} หมวด</b> ยังไม่มีสต็อกเลย · รวมมีสต็อก <b>${O.stocked}</b> จาก ${O.n} รายการ`;
+  hbars($('#ov-atc'),O.atc,{l:r=>`${r.code} · ${r.name}`,v:r=>r.n,f:r=>r.n,tip:r=>`<b>ATC ${esc(r.code)}</b>${esc(r.name)}<br>${r.n} รายการ (${(r.n/O.n*100).toFixed(1)}%)`});
+  $('#s-ovatc').innerHTML=`ตรวจรูปแบบรหัส ATC แล้ว <b>${O.atc_bad.length===0?'ถูกต้องทุกรายการ':O.atc_bad.length+' รายการผิดรูปแบบ'}</b> (ตรวจเฉพาะรูปแบบ ไม่ได้ตรวจความถูกต้องของตัวยา)`;
+  const topF=O.forms.slice(0,8),other=O.forms.slice(8).reduce((a,f)=>a+f.n,0);
+  const fr=topF.concat(other?[{name:`อื่น ๆ (${O.forms.length-8} รูปแบบ)`,n:other}]:[]);
+  hbars($('#ov-form'),fr,{l:r=>r.name,v:r=>r.n,f:r=>r.n,tip:r=>`<b>${esc(r.name)}</b>${r.n} รายการ (${(r.n/O.n*100).toFixed(1)}%)`});
+  $('#s-ovform').innerHTML=O.forms.length>1?`${esc(O.forms[0].name)} และ ${esc(O.forms[1].name)} รวม <b>${((O.forms[0].n+O.forms[1].n)/O.n*100).toFixed(0)}%</b> ของทะเบียน`:'';
+  const bins=[['≤10',0,10],['11–30',11,30],['31–60',31,60],['61–100',61,100],['101–200',101,200],['>200',201,1e9]];
+  const hist=bins.map(([n,lo,hi])=>({name:n,n:dr.filter(r=>r.rl>=lo&&r.rl<=hi).length}));
+  colChart($('#ov-rl'),hist,{v:r=>r.n,l:r=>r.name,step:20,all:true,tip:r=>`<b>Reorder level ${esc(r.name)}</b>${r.n} รายการ`,aria:'การกระจายของ reorder level'});
+  $('#s-ovrl').innerHTML=`ต่ำสุด ${fmt(O.rl_min)} · ค่ากลาง <b>${fmt(O.rl_med)}</b> · สูงสุด ${fmt(O.rl_max)} หน่วย (นโยบายสมมติของร้าน)`;
+}
+
+/* ---------------- Drug Explorer ---------------- */
+const EX={q:'',cat:'',form:'',status:'',sort:'dn',dir:-1,page:0,size:12,sel:null};
+let exInit=false;
+function exFiltered(){
+  const q=EX.q.trim().toLowerCase();
+  const a=M.drugs.filter(r=>{
+    if(q&&!(`${r.sku} ${r.name} ${r.strength} ${r.atc} ${r.cat} ${r.form}`).toLowerCase().includes(q))return false;
+    if(EX.cat&&r.cat!==EX.cat)return false;
+    if(EX.form&&r.form!==EX.form)return false;
+    const s=EX.status;
+    if(s==='stock'&&!r.nlots)return false;
+    if(s==='none'&&r.nlots)return false;
+    if(s==='low'&&!(r.nlots&&r.q<r.rl))return false;
+    if(s==='near'&&!(r.exp&&daysTo(r.exp)<=90))return false;
+    if(s==='disp'&&!r.dn)return false;
+    return true;
+  });
+  const k=EX.sort,d=EX.dir;
+  a.sort((x,y)=>{
+    const c=typeof x[k]==='string'?String(x[k]).localeCompare(String(y[k]),'th'):(x[k]-y[k]);
+    return (c*d)||x.name.localeCompare(y.name);
+  });
+  return a;
+}
+function exInitUI(){
+  exInit=true;
+  O=O||overviewStats(M);
+  const opt=(v,t)=>`<option value="${esc(v)}">${esc(t)}</option>`;
+  $('#ex-cat').innerHTML=opt('','ทุกหมวด')+O.cats.map(c=>opt(c.name,`${c.name} (${c.n})`)).join('');
+  $('#ex-form').innerHTML=opt('','ทุกรูปแบบ')+O.forms.map(f=>opt(f.name,`${f.name} (${f.n})`)).join('');
+  const bind=(id,key)=>$(id).addEventListener(id==='#ex-q'?'input':'change',e=>{EX[key]=e.target.value;EX.page=0;drawExplorer()});
+  bind('#ex-q','q');bind('#ex-cat','cat');bind('#ex-form','form');bind('#ex-status','status');
+  $('#ex-reset').addEventListener('click',()=>{
+    Object.assign(EX,{q:'',cat:'',form:'',status:'',page:0});
+    ['#ex-q','#ex-cat','#ex-form','#ex-status'].forEach(i=>$(i).value='');drawExplorer();
+  });
+  if(!EX.sel&&M.drugs.length)EX.sel=[...M.drugs].sort((a,b)=>b.dn-a.dn)[0].sku;
+}
+function drawExplorer(){
+  if(!exInit)exInitUI();
+  const a=exFiltered(),pages=Math.max(1,Math.ceil(a.length/EX.size));
+  EX.page=Math.min(EX.page,pages-1);
+  const slice=a.slice(EX.page*EX.size,(EX.page+1)*EX.size);
+  $('#ex-count').textContent=`แสดง ${fmt(a.length)} จาก ${fmt(M.drugs.length)} รายการ`;
+  const cols=[['sku','SKU'],['name','ยา'],['cat','หมวด'],['atc','ATC'],['rl','Reorder','n'],['q','สต็อก','n'],['','สถานะ'],['dn','จ่าย (ครั้ง)','n']];
+  const arrow=k=>EX.sort===k?(EX.dir>0?' ▲':' ▼'):'';
+  $('#ex-table').innerHTML=`<thead><tr>${cols.map(([k,t,c])=>k?`<th class="sortable ${c||''}" data-k="${k}" aria-sort="${EX.sort===k?(EX.dir>0?'ascending':'descending'):'none'}">${t}${arrow(k)}</th>`:`<th>${t}</th>`).join('')}</tr></thead><tbody>${
+   slice.length?slice.map(r=>{const near=r.exp&&daysTo(r.exp)<=90;
+     return `<tr class="clk ${r.sku===EX.sel?'sel':''}" tabindex="0" data-sku="${esc(r.sku)}"><td><code>${esc(r.sku)}</code></td>
+     <td><b>${esc(nameOf(r))}</b><br><span class="mini">${esc(r.form)}</span></td>
+     <td>${esc(r.cat)}</td><td>${esc(r.atc)}</td><td class="n">${fmt(r.rl)}</td><td class="n">${r.nlots?fmt(r.q):'—'}</td>
+     <td>${pillH(dstat(r))}${near?' <span class="pill o" title="หมดอายุภายใน 90 วัน">⏱</span>':''}</td><td class="n">${r.dn||'—'}</td></tr>`}).join(''):`<tr><td colspan="8"><div class="empty">ไม่พบรายการที่ตรงกับตัวกรอง</div></td></tr>`}</tbody>`;
+  $('#ex-table').querySelectorAll('th.sortable').forEach(th=>th.addEventListener('click',()=>{
+    const k=th.dataset.k;if(EX.sort===k)EX.dir*=-1;else{EX.sort=k;EX.dir=(k==='dn'||k==='q'||k==='rl')?-1:1}EX.page=0;drawExplorer();}));
+  $('#ex-table').querySelectorAll('tr.clk').forEach(tr=>{
+    const pick=()=>{EX.sel=tr.dataset.sku;drawExplorer()};
+    tr.addEventListener('click',pick);tr.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick()}});
+  });
+  $('#ex-pager').innerHTML=`<span>หน้า ${EX.page+1} / ${pages}</span><span><button class="btn" id="pg-p" type="button" ${EX.page===0?'disabled':''}>← ก่อนหน้า</button> <button class="btn" id="pg-n" type="button" ${EX.page>=pages-1?'disabled':''}>ถัดไป →</button></span>`;
+  $('#pg-p').addEventListener('click',()=>{EX.page--;drawExplorer()});
+  $('#pg-n').addEventListener('click',()=>{EX.page++;drawExplorer()});
+  renderDetail(EX.sel);
+}
+function renderDetail(sku){
+  const r=M.by[sku],node=$('#ex-detail');
+  if(!r){node.innerHTML='<div class="empty">เลือกยาจากตารางเพื่อดูรายละเอียด</div>';return}
+  const u=r.dq/M.pdays,cov=(u>0&&r.q>0)?r.q/u:null;
+  const atcName=(O.atc.find(a=>a.code===r.atc[0])||{}).name||'-';
+  const chain=r.atc?[r.atc[0],r.atc.slice(0,3),r.atc.slice(0,4),r.atc.slice(0,5),r.atc]:[];
+  const byDay={};r.dd.forEach(([d,q])=>byDay[d]=(byDay[d]||0)+q);
+  const bars=dayRange(M.first,M.last).map(d=>({d,q:byDay[d]||0}));
+  const mx=Math.max(1,...bars.map(b=>b.q)),bw=300/bars.length;
+  const svg=`<svg viewBox="0 0 300 70" width="100%" height="70" role="img" aria-label="ปริมาณที่จ่ายรายวัน"><line x1="0" x2="300" y1="62" y2="62" stroke="var(--grid)"/>${
+    bars.map((b,i)=>{const h=b.q/mx*50;return b.q?`<path class="db" data-i="${i}" d="${rtop(i*bw+1.5,62-h,bw-3,h,2)}" fill="var(--blue)"/>`:''}).join('')}${
+    bars.map((b,i)=>`<rect class="dh2" data-i="${i}" x="${i*bw}" y="0" width="${bw}" height="62" fill="transparent"/>`).join('')}
+    <text x="0" y="69" style="font-size:9px">${fd(bars[0].d)}</text><text x="300" y="69" text-anchor="end" style="font-size:9px">${fd(bars[bars.length-1].d)}</text></svg>`;
+  const dst=dstat(r);
+  node.innerHTML=`<h3 class="dh">${esc(nameOf(r))}</h3>
+   <div class="mini">${esc(r.sku)} · ${esc(r.form)} · หน่วย: ${esc(r.unit)}</div>
+   <div class="dtags">${pillH(dst)}${r.exp&&daysTo(r.exp)<=90?`<span class="pill o">⏱ หมดอายุ ${daysTo(r.exp)} วัน</span>`:''}</div>
+   <div class="mini">${esc(r.cat)}</div>
+   <div class="dsec">รหัส ATC · กลุ่มหลัก ${esc(r.atc[0]||'-')}: ${esc(atcName)}</div>
+   <div class="atcchain">${chain.map(c=>`<code>${esc(c)}</code>`).join('')}</div>
+   <div class="dgrid">
+    <div class="st"><small>สต็อกที่ใช้ได้</small><b>${r.nlots?fmt(r.q):'—'}<em>${r.nlots?esc(r.unit):''}</em></b></div>
+    <div class="st"><small>Reorder level</small><b>${fmt(r.rl)}<em>${esc(r.unit)}</em></b></div>
+    <div class="st"><small>จ่ายในช่วงข้อมูล</small><b>${r.dn}<em>ครั้ง</em></b></div>
+    <div class="st"><small>รหัสผู้รับยา (ไม่ซ้ำ)</small><b>${r.dp}<em>รหัส</em></b></div>
+    <div class="st"><small>ปริมาณที่จ่ายรวม</small><b>${fmt(r.dq)}<em>${esc(r.unit)}</em></b></div>
+    <div class="st"><small>ครอบคลุม</small><b>${cov===null?'—':cov>999?'999+':cov.toFixed(0)}<em>${cov===null?'':'วัน'}</em></b></div>
+   </div>
+   <div class="dsec">ปริมาณที่จ่ายรายวัน${r.last?` · ล่าสุด ${fdy(r.last)}`:''}</div>
+   ${r.dn?svg:'<div class="mini">ไม่มีการจ่ายในช่วงข้อมูล</div>'}
+   <div class="dsec">ล็อตในสต็อก</div>
+   ${r.lots.length?`<div class="scroll"><table><thead><tr><th>ล็อต</th><th>หมดอายุ</th><th class="n">คงเหลือ</th><th>สถานะ</th></tr></thead><tbody>${
+     r.lots.map(l=>`<tr><td>${esc(l.lot)}</td><td>${l.exp?fdy(l.exp):'<i class="mini">ไม่ระบุ</i>'}</td><td class="n">${fmt(l.q)}</td><td>${pillH(PILL[l.st]||[l.st,'m'])}</td></tr>`).join('')}</tbody></table></div>`:'<div class="mini">ไม่มีข้อมูลสต็อกของยานี้</div>'}`;
+  node.querySelectorAll('.dh2').forEach(h=>{
+    const b=bars[+h.dataset.i],p=node.querySelector(`.db[data-i="${h.dataset.i}"]`);
+    h.addEventListener('mousemove',e=>{if(p)p.setAttribute('opacity','.75');showTip(e,`<b>${fdl(b.d)}</b>${b.q?`จ่าย ${fmt(b.q)} ${esc(r.unit)}`:'ไม่มีการจ่าย'}`)});
+    h.addEventListener('mouseleave',()=>{if(p)p.removeAttribute('opacity');hideTip()});
+  });
+}
+/* รับ hash จากหน้า dashboard: #explorer/SKU เปิด Explorer และเลือกยานั้น */
+function openFromHash(){
+  const m=(location.hash||'').slice(1).split('/'),tab=m[0],sku=m[1]?decodeURIComponent(m[1]):null;
+  if(sku&&M.by[sku]){
+    Object.assign(EX,{q:'',cat:'',form:'',status:'',sel:sku});
+    const idx=exFiltered().findIndex(r=>r.sku===sku);EX.page=idx>=0?Math.floor(idx/EX.size):0;
+    return 'explorer';
+  }
+  return tab;
+}
+
+/* =====================================================================
+   เริ่มทำงาน
+   ===================================================================== */
+let M=null,curTab='overview';
+const TABDRAW={overview:drawOverview,explorer:drawExplorer};
+function showTab(t){
+  if(!M)return;
+  if(!TABDRAW[t])t='overview';
+  curTab=t;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));
+  document.querySelectorAll('.tabpane').forEach(p=>p.classList.toggle('on',p.id==='pane-'+t));
+  TABDRAW[t]();
+  try{history.replaceState(null,'','#'+t)}catch(e){}
+}
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{showTab(b.dataset.tab);window.scrollTo({top:0,behavior:'smooth'})}));
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(M&&curTab!=='explorer')TABDRAW[curTab]()},150)});
+$('#theme').addEventListener('click',()=>{
+  const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme=dark?'light':'dark';
+});
+(async function boot(){
+  try{
+    M=buildModel(await loadRaw());                // ดึงข้อมูลผ่าน /api/data (มีทางสำรองในฟังก์ชัน loadRaw)
+    renderSourceUI(M,'drugs_update.json, stock.json, dispense-log.json');
+    $('#chip-period').textContent='ช่วงข้อมูลจ่ายยา '+fdy(M.first)+' – '+fdy(M.last);
+    $('#chip-asof').textContent='ยอดสต็อก ณ '+fdy(M.asof);
+    $('#chip-src').textContent='ทะเบียนยา '+fmt(M.drugs.length)+' รายการ';
+    $('#status').hidden=true;
+    showTab(openFromHash()||'overview');
+  }catch(e){showError(e.message||String(e))}
+})();
+
+</script>
+</body>
+</html>
